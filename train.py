@@ -22,7 +22,7 @@ if __name__ == "__main__":
                   metrics=['accuracy'])
 
     checkpoint_callback = ModelCheckpoint(
-        'best_model.h5',
+        BEST_FILE,
         monitor='val_accuracy',
         save_best_only=True,
         mode='max',
@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     history = model.fit(
         train,
-        epochs=BEST_FILE,
+        epochs=CONFIG.num_epochs,
         validation_data=val,
         verbose=1,
         callbacks=[checkpoint_callback],

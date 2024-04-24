@@ -1,6 +1,7 @@
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.models import load_model
+from tensorflow.keras.utils import custom_object_scope
 from pickle import dump
 
 from config import DefaultConfig
@@ -9,6 +10,7 @@ from data import prep_cifar100_datasets
 
 if __name__ == "__main__":
     CONFIG = DefaultConfig().parse()
+    BEST_FILE = f"{CONFIG.model_name}_best.h5"
 
     train, val, test = prep_cifar100_datasets(val_split=CONFIG.val_ratio,
                                               batch_size=CONFIG.batch_size)
@@ -29,13 +31,15 @@ if __name__ == "__main__":
 
     history = model.fit(
         train,
-        epochs=CONFIG.num_epochs,
+        epochs=BEST_FILE,
         validation_data=val,
         verbose=1,
         callbacks=[checkpoint_callback],
     )
 
-    best_model = load_model(f'{CONFIG.model_name}_best.h5')
+    with custom_object_scope({'CustomCNN': CustomCNN}):
+        best_model = load_model(BEST_FILE)
+
     test_loss, test_accuracy = best_model.evaluate(test, verbose=1)
     print(f"Test Loss: {test_loss}, Test Accuracy: {test_accuracy}")
 

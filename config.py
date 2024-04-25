@@ -19,6 +19,9 @@ class DefaultConfig:
         for key, val in kwargs.items():
             if isinstance(val, list):
                 args.extend([f"--{key}", *map(str, val)])
+            elif not isinstance(str, list):
+                args.extend([f"--{key}", str(val)])
             else:
                 args.extend([f"--{key}", val])
+
         return self.p.parse_args(args)

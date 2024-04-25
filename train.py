@@ -52,5 +52,5 @@ if __name__ == "__main__":
 
 
 def train(**kwargs):
-    config = DefaultConfig().args()
+    config = DefaultConfig().args(**kwargs)
     _train(config)

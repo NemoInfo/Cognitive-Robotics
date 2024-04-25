@@ -4,7 +4,7 @@ from tensorflow.keras.models import load_model
 from pickle import dump
 
 from config import DefaultConfig
-from model import CustomCNN
+from model import build_model
 from data import prep_cifar100_datasets
 
 if __name__ == "__main__":
@@ -14,7 +14,7 @@ if __name__ == "__main__":
     train, val, test = prep_cifar100_datasets(val_split=CONFIG.val_ratio,
                                               batch_size=CONFIG.batch_size)
 
-    model = CustomCNN(input_shape=(32, 32, 3), num_classes=100)
+    model = build_model(input_shape=(32, 32, 3), num_classes=100, blocks=CONFIG.blocks)
 
     model.compile(optimizer=Adam(learning_rate=CONFIG.lr),
                   loss=['categorical_crossentropy'],

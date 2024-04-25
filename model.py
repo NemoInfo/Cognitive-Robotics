@@ -1,48 +1,34 @@
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, Activation, BatchNormalization, MaxPooling2D, Dropout, Flatten, Dense
 from tensorflow.keras.layers.experimental.preprocessing import RandomFlip, RandomRotation, RandomZoom, RandomTranslation
-from tensorflow.keras.utils import register_keras_serializable
 
-@register_keras_serializable
-class CustomCNN(Sequential):
-    def __init__(self, input_shape, num_classes, block_sizes=[32, 64, 128]):
-        super().__init__()
-        # Randomize
-        self.add(RandomFlip("horizontal_and_vertical", input_shape=input_shape))
-        self.add(RandomRotation(0.1))
-        self.add(RandomZoom(0.1))
-        self.add(RandomTranslation(0.1, 0.1))
 
-        # Convolution Blocks
-        for block in block_sizes:
-            self.add(Conv2D(block, (3, 3), padding='same', input_shape=input_shape))
-            self.add(Activation('relu'))
-            self.add(BatchNormalization())
-            self.add(Conv2D(block, (3, 3), padding='same'))
-            self.add(Activation('relu'))
-            self.add(MaxPooling2D(pool_size=(2, 2)))
+def build_model(input_shape, num_classes, blocks):
+    model = Sequential()
+    model.add(RandomFlip("horizontal_and_vertical", input_shape=input_shape))
+    model.add(RandomRotation(0.1))
+    model.add(RandomZoom(0.1))
+    model.add(RandomTranslation(0.1, 0.1))
 
-        # Dense
-        self.add(Flatten())
-        self.add(Dense(512))
-        self.add(Activation('relu'))
-        self.add(Dropout(0.5))
-        self.add(BatchNormalization())
+    # Convolution Blocks
+    for block in blocks:
+        model.add(Conv2D(block, (3, 3), padding='same', input_shape=input_shape))
+        model.add(Activation('relu'))
+        model.add(BatchNormalization())
+        model.add(Conv2D(block, (3, 3), padding='same'))
+        model.add(Activation('relu'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Dropout(0.2))
 
-        # Output
-        self.add(Dense(num_classes))
-        self.add(Activation('softmax'))
+    # Dense
+    model.add(Flatten())
+    model.add(Dense(512))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.3))
+    model.add(BatchNormalization())
 
-    def get_config(self):
-        config = super().get_config()
-        config.update({
-            'input_shape': self.input_shape,
-            'num_classes': self.num_classes,
-            'block_sizes': self.block_sizes
-        })
+    # Output
+    model.add(Dense(num_classes))
+    model.add(Activation('softmax'))
 
-        return config
-
-    @classmethod
-    def from_config(cls, config):
-        return cls(**config)
+    return model

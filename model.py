@@ -1,7 +1,9 @@
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, Activation, BatchNormalization, MaxPooling2D, Dropout, Flatten, Dense
 from tensorflow.keras.layers.experimental.preprocessing import RandomFlip, RandomRotation, RandomZoom, RandomTranslation
+from tensorflow.keras.utils import register_keras_serializable
 
+@register_keras_serializable
 class CustomCNN(Sequential):
     def __init__(self, input_shape, num_classes, block_sizes=[32, 64, 128]):
         super().__init__()
@@ -30,3 +32,17 @@ class CustomCNN(Sequential):
         # Output
         self.add(Dense(num_classes))
         self.add(Activation('softmax'))
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            'input_shape': self.input_shape,
+            'num_classes': self.num_classes,
+            'block_sizes': self.block_sizes
+        })
+
+        return config
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)

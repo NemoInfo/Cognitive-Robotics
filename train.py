@@ -1,7 +1,6 @@
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.models import load_model
-from tensorflow.keras.utils import custom_object_scope
 from pickle import dump
 
 from config import DefaultConfig
@@ -37,8 +36,7 @@ if __name__ == "__main__":
         callbacks=[checkpoint_callback],
     )
 
-    with custom_object_scope({'CustomCNN': CustomCNN}):
-        best_model = load_model(BEST_FILE)
+    best_model = load_model(BEST_FILE)
 
     test_loss, test_accuracy = best_model.evaluate(test, verbose=1)
     print(f"Test Loss: {test_loss}, Test Accuracy: {test_accuracy}")

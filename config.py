@@ -10,6 +10,7 @@ class DefaultConfig:
         self.p.add_argument("--batch_size", type=int, default=32)
         self.p.add_argument("--lr", type=float, default=1e-4)
         self.p.add_argument("--blocks", nargs='+', type=int, default=[32, 64, 128])
+        self.p.add_argument("--dropouts", nargs='+', type=float, default=[0.2, 0.2, 0.2])
 
     def parse(self):
         return self.p.parse_args()

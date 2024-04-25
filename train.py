@@ -7,16 +7,17 @@ from config import DefaultConfig
 from model import build_model
 from data import prep_cifar100_datasets
 
-if __name__ == "__main__":
-    CONFIG = DefaultConfig().parse()
-    BEST_FILE = f"{CONFIG.model_name}_best.h5"
 
-    train, val, test = prep_cifar100_datasets(val_split=CONFIG.val_ratio,
-                                              batch_size=CONFIG.batch_size)
+def _train(config):
+    BEST_FILE = f"models/{config.model_name}_best.keras"
+    HISTORY_FILE = f"history/{config.model_name}.pkl"
 
-    model = build_model(input_shape=(32, 32, 3), num_classes=100, blocks=CONFIG.blocks)
+    train, val, test = prep_cifar100_datasets(val_split=config.val_ratio,
+                                              batch_size=config.batch_size)
 
-    model.compile(optimizer=Adam(learning_rate=CONFIG.lr),
+    model = build_model(input_shape=(32, 32, 3), num_classes=100, blocks=config.blocks)
+
+    model.compile(optimizer=Adam(learning_rate=config.lr),
                   loss=['categorical_crossentropy'],
                   metrics=['accuracy'])
 
@@ -30,7 +31,7 @@ if __name__ == "__main__":
 
     history = model.fit(
         train,
-        epochs=CONFIG.num_epochs,
+        epochs=config.num_epochs,
         validation_data=val,
         verbose=1,
         callbacks=[checkpoint_callback],
@@ -41,5 +42,15 @@ if __name__ == "__main__":
     test_loss, test_accuracy = best_model.evaluate(test, verbose=1)
     print(f"Test Loss: {test_loss}, Test Accuracy: {test_accuracy}")
 
-    with open('history.pkl', 'wb') as f:
+    with open(HISTORY_FILE, 'wb') as f:
         dump(history.history, f)
+
+
+if __name__ == "__main__":
+    CONFIG = DefaultConfig().parse()
+    _train(CONFIG)
+
+
+def train(**kwargs):
+    config = DefaultConfig().args()
+    _train(config)

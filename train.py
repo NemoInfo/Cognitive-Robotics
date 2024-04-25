@@ -15,7 +15,7 @@ def _train(config):
     train, val, test = prep_cifar100_datasets(val_split=config.val_ratio,
                                               batch_size=config.batch_size)
 
-    model = build_model(input_shape=(32, 32, 3), num_classes=100, blocks=config.blocks, dropouts=config.dropouts)
+    model = build_model(input_shape=(32, 32, 3), num_classes=100, blocks=config.blocks, dropouts=config.dropouts, kernel_size=config.kernel_size)
 
     model.compile(optimizer=Adam(learning_rate=config.lr),
                   loss=['categorical_crossentropy'],

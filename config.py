@@ -7,6 +7,7 @@ class DefaultConfig:
         self.p.add_argument("--model_name", type=str, default="vision")
         self.p.add_argument("--val_ratio", type=float, default=0.2)
         self.p.add_argument("--num_epochs", type=int, default=50)
+        self.p.add_argument("--kernel_size", type=int, default=3)
         self.p.add_argument("--batch_size", type=int, default=32)
         self.p.add_argument("--lr", type=float, default=1e-4)
         self.p.add_argument("--blocks", nargs='+', type=int, default=[32, 64, 128])
